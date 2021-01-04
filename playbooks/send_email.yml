@@ -1,0 +1,15 @@
+---
+- name: "Send email of users who logged in within last 24 hours"
+  gather_facts: yes
+  hosts: hostname
+  tasks:
+    - name: "Get the List of Users logged in within 24 hours"
+      shell: "last -w -s '-1 day' | head -n -1 | awk '{print $1}'"
+      register: userlist
+    - name: Sending an e-mail using the remote machine, not the Ansible controller node
+      community.general.mail:
+        host: localhost
+        port: 25
+        to: Admin User <admin.user@example.com>
+        subject: Login Reports
+        body: Here are the Users who logged in withing the last 24 hours\n {{userlist.stdout}}
